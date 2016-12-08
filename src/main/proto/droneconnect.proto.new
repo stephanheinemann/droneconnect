@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cfar.swim.droneconnect";
+option java_outer_classname = "DroneConnectProtoc";
+
+package droneconnect;
+
+// The droneconnect service definition.  Services are meant to provide a layer of abstraction for
+// controlling and accessing information from the drone.
+service DroneConnect {
+  
+    rpc getAutopilotInfo(UavIdentifier) returns (AutopilotInfo) {}
+    rpc getPosition() returns (Position) {}
+    rpc getHeight() returns (Height) {}
+    
+    rpc setMode(Mode) returns (Null) {}
+    rpc getMode(Null) returns (Mode) {}
+  
+    rpc setArmed(Armed) returns (Null) {}
+    rpc isArmed(Null) returns (Armed) {}
+  
+    rpc setSafe(Safety) returns (Null) {}
+    rpc isSafe(Null) returns (Safety) {}
+  
+  	rpc takeoff(Height) returns (Null) {}
+  	
+    rpc setPath(stream Position) returns (Null) {}
+}
+
+message Null {
+}
+
+message UavIdentifier {
+    int32 identifier = 1;
+}
+
+// Information about the autopilot firmware
+message AutopilotInfo {
+    int32 identifier = 1;
+    string autopilot_firmware_version = 2;
+    int32 major_version_number = 3;
+    int32 minor_version_number = 4;
+    int32 patch_version_number = 5;
+    string release_type = 6;
+    int32 release_version = 7;
+    bool stable_release = 8;
+}
+
+// Position of the drone.
+// 
+// The latitude and longitude are relative to the WGS84 coordinate system.  
+// relativeAltitude -     Altitude is relative to the HOME position in meters.  The HOME position is
+//                        set when the drone is armed.
+// gpsAltitude -          Altitude is relative to mean sea-level (MSL)
+// useRelativeAltitude -  When set to TRUE, mission should be relative to HOME position.  Of use
+//                        only when a mission is sent to the drone.  When a position is received
+//                        both relativeAltitude and useRelativeAltitude will have relevant values.
+message Position {
+    double latitude = 1;
+    double longitude = 2;
+    double altitude = 3;
+}
+
+// Mode of the drone, eg. AUTO    
+message Mode {
+    string mode = 1; // enumerations vs string? (getSupportedModes)
+}
+
+// Armed state of the drone.  TRUE indicates the drone is armed
+message Armed {
+    bool arm = 1;
+}
+
+// True indicates safety switch is on
+message Safety {
+    bool safety = 1;
+}
+
+// Take off to an altitude in meters
+message Height {
+    double height = 1;
+}
