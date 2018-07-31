@@ -12,7 +12,12 @@ package droneconnect;
 service DroneConnect {
   
     rpc getAutopilotInfo(UavIdentifier) returns (AutopilotInfo) {}
+
     rpc getPosition(Null) returns (Position) {}
+    rpc getTimedPosition(Null) returns (TimedPosition) {}
+
+    rpc getHeading(Null) returns (Heading) {}
+    rpc getAttitude(Null) returns (Attitude) {}
   
     rpc setMode(Mode) returns (Null) {}
     rpc hasMode(Null) returns (Mode) {}
@@ -26,6 +31,10 @@ service DroneConnect {
     rpc takeoff(TakeoffToAltitude) returns (Position) {}
   
     rpc setPath(stream Position) returns (Null) {}
+
+    rpc getNextWaypoint(Null) returns (IndexedPosition) {}
+
+    rpc getStatus(Null) returns (Status) {}
 }
 
 message Null {
@@ -64,6 +73,40 @@ message Position {
     bool useRelativeAltitude = 5;
 }
 
+// Current time of the drone
+message Time {
+    int32 year = 1;
+    int32 month = 2;
+    int32 day = 3;
+    int32 hour = 4;
+    int32 minute = 5;
+    int32 second = 6;
+}
+
+// Position of the drone with current time
+message TimedPosition {
+    Position position = 1;
+    Time time = 2;
+}
+
+// Position with index of waypoint in current mission
+message IndexedPosition {
+    Position position = 1;
+    int32 index = 2;
+}
+
+// Heading of the drone
+message Heading {
+    double heading = 1;
+}
+
+// Attitude of the drone
+message Attitude {
+    double pitch = 1;
+    double bank = 2;
+    double yaw = 3;
+}
+
 // Mode of the drone, eg. AUTO    
 message Mode {
     string mode = 1;
@@ -82,4 +125,9 @@ message Safety {
 // Take off to an altitude in meters
 message TakeoffToAltitude {
     double altitude = 1;
+}
+
+// Status of the drone, eg. ACTIVE
+message Status {
+    string status = 1;
 }
