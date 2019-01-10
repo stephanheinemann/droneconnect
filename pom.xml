@@ -1,8 +1,39 @@
+<!--
+
+    Copyright (c) 2016, Stephan Heinemann, Charlie Magnuson, Manuel Rosa (UVic Center for Aerospace Research)
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification,
+    are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+    3. Neither the name of the copyright holder nor the names of its contributors
+    may be used to endorse or promote products derived from this software without
+    specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.uvic-cfar.swim</groupId>
 	<artifactId>droneconnect</artifactId>
-	<version>1.0.0-alpha1</version>
+	<version>1.0.0-alpha2</version>
 	<packaging>bundle</packaging>
 	<name>SWIM DroneConnect</name>
 	<description>DroneConnect for SWIM-based Planning, Decision-Making and Support</description>
@@ -19,21 +50,39 @@
 
 	<organization>
 		<name>UVic Center for Aerospace Research</name>
-		<url>http://www.uvic-cfar.com</url>
+		<url>https://cfar.engr.uvic.ca</url>
 	</organization>
 
 	<developers>
 		<developer>
 			<organization>UVic Center for Aerospace Research</organization>
-			<organizationUrl>http://www.uvic-cfar.com</organizationUrl>
+			<organizationUrl>https://cfar.engr.uvic.ca</organizationUrl>
 			<name>Stephan Heinemann</name>
 			<email>stephan@rigiresearch.com</email>
+			<roles>
+				<role>Lead Researcher</role>
+				<role>Lead Architect</role>
+				<role>Lead Software-Engineer</role>
+			</roles>
 		</developer>
 		<developer>
 			<organization>University of Victoria</organization>
 			<organizationUrl>http://www.uvic.ca</organizationUrl>
 			<name>Charlie Magnuson</name>
-			<email>magnuson.charlie@gmail.com&gt;</email>
+			<email>magnuson.charlie@gmail.com</email>
+			<roles>
+				<role>Researcher DroneConnect Datalink</role>
+				<role>Software-Engineer DroneConnect Datalink</role>
+			</roles>
+		</developer>
+		<developer>
+			<organization>UVic Center for Aerospace Research</organization>
+			<organizationUrl>https://cfar.engr.uvic.ca/</organizationUrl>
+			<name>Manuel Rosa</name>
+			<email>manueldiogorosa@gmail.com</email>
+			<roles>
+				<role>Software-Engineer DroneConnect Datalink</role>
+			</roles>
 		</developer>
 	</developers>
 
@@ -139,16 +188,47 @@
 				<version>0.5.0</version>
 				<configuration>
 					<protocArtifact>com.google.protobuf:protoc:3.1.0:exe:${os.detected.classifier}</protocArtifact>
-					<pluginId>grpc-java</pluginId>
-					<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.2:exe:${os.detected.classifier}</pluginArtifact>
 				</configuration>
 				<executions>
 					<execution>
+						<id>protoc-java</id>
 						<goals>
 							<goal>compile</goal>
-							<goal>compile-custom</goal>
 							<goal>test-compile</goal>
 						</goals>
+					</execution>
+					<execution>
+						<id>protoc-grpc-java</id>
+						<goals>
+							<goal>compile-custom</goal>
+							<goal>test-compile-custom</goal>
+						</goals>
+						<configuration>
+							<pluginId>grpc-java</pluginId>
+							<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.2:exe:${os.detected.classifier}</pluginArtifact>
+						</configuration>
+					</execution>
+					<execution>
+						<id>protoc-python</id>
+						<goals>
+							<goal>compile-python</goal>
+							<goal>test-compile-python</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>protoc-grpc-python</id>
+						<goals>
+							<goal>compile-custom</goal>
+						</goals>
+						<configuration>
+							<!--
+							NOTE: There is no platform-independent configuration available at the moment.
+							This configuration assumes a linux environment with the grpc python plugin
+							installed at the specified location.
+							-->
+							<pluginId>grpc-python</pluginId>
+							<pluginExecutable>/usr/local/bin/grpc_python_plugin</pluginExecutable>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -231,9 +311,15 @@
 					<aggregate>true</aggregate>
 					<header>src/main/resources/license/license.txt</header>
 					<properties>
-						<owner>Charlie Magnuson, Stephan Heinemann</owner>
+						<owner>Stephan Heinemann, Charlie Magnuson, Manuel Rosa</owner>
 						<organization>UVic Center for Aerospace Research</organization>
 					</properties>
+					<excludes>
+						<exclude>src/main/resources/server/*.py</exclude>
+					</excludes>
+					<mapping>
+						<proto>SLASHSTAR_STYLE</proto>
+					</mapping>
 				</configuration>
 			</plugin>
 			<plugin>
